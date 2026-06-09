@@ -1,0 +1,85 @@
+% ========== ESSENTIAL PACKAGES ==========
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{geometry}
+\usepackage{tikz}
+\usepackage{microtype}           % Superior typography
+\usepackage{graphicx}            % For screenshots (optional)
+\usepackage{xcolor}              % Color coding
+\usepackage{listings}            % Code listings
+\usepackage{siunitx}             % Proper units: \si{\meter\per\second}
+\usepackage{amsmath}             % Math equations
+\usepackage{hyperref}            % Clickable links
+\usepackage{url}
+\usepackage{booktabs}            % Professional tables
+\usepackage{caption}             % Better figure captions
+\usepackage{ulem}				 % For \sout (stricking out...)
+\usepackage[english]{babel}
+\usepackage{float}
+
+% ========== CUSTOM COLORS ==========
+\definecolor{codebg}{RGB}{240, 245, 250}
+\definecolor{cmdcolor}{RGB}{0, 100, 0}
+\definecolor{outputcolor}{RGB}{100, 100, 150}
+\definecolor{warningcolor}{RGB}{180, 0, 0}
+\definecolor{tipcolor}{RGB}{0, 100, 50}
+
+% ========== CODE LISTING SETUP ==========
+\lstset{
+	backgroundcolor=\color{codebg},
+	basicstyle=\ttfamily\small,
+	breaklines=true,
+	frame=single,
+	captionpos=b,
+	rulecolor=\color{gray!30},
+	tabsize=2,
+	showstringspaces=false
+}
+
+% Custom style for terminal commands
+\lstdefinestyle{terminal}{
+	basicstyle=\ttfamily\small\color{cmdcolor},
+	backgroundcolor=\color{black!5},
+	frame=none,
+	columns=fullflexible
+}
+
+% Custom style for OpenFOAM files
+\lstdefinestyle{openfoam}{
+	language=C++,
+	morekeywords={dimensions, internalField, boundaryField, type, value},
+	keywordstyle=\color{blue},
+	commentstyle=\color{gray!50}\itshape
+}
+
+\lstdefinestyle{output}{
+	backgroundcolor=\color{black!5},
+	basicstyle=\ttfamily\small\color{outputcolor},
+	frame=none,
+	breaklines=true
+}
+% ========== HYPERREF SETUP ==========
+\hypersetup{
+	colorlinks=true,
+	linkcolor=blue,
+	citecolor=green,
+	filecolor=magenta,
+	urlcolor=cyan,
+	pdftitle={OpenFOAM Tutorial: pitzDaily with simpleFoam},
+	pdfauthor={Your Name},
+	pdfsubject={CFD with OpenFOAM},
+	pdfkeywords={OpenFOAM, CFD, simpleFoam, pitzDaily, terminal}
+}
+
+
+\newcommand{\warning}[1]{\par\vspace{5pt}\noindent\textcolor{red}{\textbf{WARNING:}} #1\par\vspace{3pt}}
+\newcommand{\tip}[1]{\par\vspace{5pt}\noindent\textcolor{green!50!black}{\textbf{TIP:}} #1\par\vspace{3pt}}
+\newcommand{\important}[1]{\par\vspace{5pt}\noindent\textcolor{blue}{\textbf{IMPORTANT:}} #1\par\vspace{3pt}}                    
+
+% ========== CUSTOM COMMANDS ==========
+\newcommand{\terminalcmd}[1]{\textbf{\texttt{\textcolor{cmdcolor}{#1}}}}
+\newcommand{\ofkeyword}[1]{\textbf{\textcolor{blue}{#1}}}
+\newcommand{\filename}[1]{\texttt{\textcolor{purple}{#1}}}
+\newcommand{\commandexample}[1]{\vspace{5pt}\hspace{10pt}\terminalicon\ \terminalcmd{#1}\vspace{5pt}}
+\newcommand{\key}[1]{\texttt{\textbf{#1}}}
