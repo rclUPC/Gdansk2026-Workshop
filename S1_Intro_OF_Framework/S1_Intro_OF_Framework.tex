@@ -136,6 +136,8 @@ foamVersion
 \begin{lstlisting}[style=terminal]
 # For system-wide installation
 source /usr/lib/openfoam/openfoam-2312/etc/bashrc
+# For a local bash session with OpenFOAM
+openfoam2512
 \end{lstlisting}
 
 \subsection{Navigating to Tutorials}
@@ -148,8 +150,8 @@ cd $FOAM_TUTORIALS
 # List available tutorials
 ls
 
-# Navigate to incompressible simpleFoam tutorials
-cd incompressible/simpleFoam
+# Navigate to incompressible pimpleFoam tutorials
+cd incompressible/pimpleFoam
 \end{lstlisting}
 
 % ========== SECTION 3: CASE EXPLORATION ==========
@@ -268,12 +270,12 @@ The utility \terminalcmd{foamJob} creates a log file.
 	less log.checkMesh
 \end{lstlisting}
 
-\subsection{Running simpleFoam}
+\subsection{Running pimpleFoam}
 Now run the simulation:
 
 \begin{lstlisting}[style=terminal]
 # Run the solver
-foamJob -s -log-app simpleFoam
+foamJob -s -log-app pimpleFoam
 
 \end{lstlisting}
 
@@ -285,17 +287,17 @@ Monitor convergence:
 # OR check the log file periodically:
 
 # Show last 20 lines of residuals
-tail -20 log.simpleFoam | grep "Solving for"
+tail -20 log.pimpleFoam | grep "Solving for"
 
 # Check final residuals
-tail -50 log.simpleFoam | grep "Final residual"
+tail -50 log.pimpleFoam | grep "Final residual"
 \end{lstlisting}
 
 Plot it using \terminalcmd{gnuplot}
 
 \begin{lstlisting}[style=terminal]
 	     # Generate residual files from the log file
-	     foamLog log.simpleFoam
+	     foamLog log.pimpleFoam
 	
 	     # Visualize the residuals of the main variables with gnuplot
 	     gnuplot
@@ -322,8 +324,8 @@ OpenFOAM stores results in time directories. Examine the final results:
 # List time directories
 foamListTimes
 
-# Go to final time directory (e.g., typically 281 for pitzDaily)
-cd 281
+# Go to final time directory (0.3 for this simulation)
+cd 0.3
 
 # List available fields
 ls
@@ -333,23 +335,72 @@ ls
 \subsection{Using OpenFOAM Command Line Tools}
 
 
-Check field statistics:
+\begin{itemize}
+	\item Check field statistics
+
+
 
 \begin{lstlisting}[style=terminal]
-# Go back to case root
+# Go back to case root if you are still in the time folder
 cd ..
 
-# Get pressure statistics
+# Get some statistics
 postProcess -func writeCellCentres
-postProcess -func "patchAverage(name=inlet,p)"
-postProcess -func minMaxMagnitudes
+postProcess -func minMaxMagnitude
 \end{lstlisting}
 
-\important{Besides the screen, the information from \terminalcmd{postProcess} is also saved in the \filename{postProcessing} folder}
+\item Check average pressure in inlet:
+
+\begin{lstlisting}[style=terminal]
+	# Get the dictionary 
+	foamGetDict patchAverage
+\end{lstlisting}
+
+This will add the file \filename{system/patchAverage} to the case. The name of this function can be changed, and it can be edited to define the patch and the variable to be averaged
+
+\begin{lstlisting}[style=terminal]
+	# Rename the function 
+	mv system/patchAverage system/inletAveragePressure
+	# Edit the function (you can use vim, nano, emacs, ...)
+	vim system/inletAveragePressure
+\end{lstlisting}
+
+\begin{lstlisting}[style=output]
+	...
+	name    inlet;
+	fields  (p);
+	
+	operation areaAverage;
+	#includeEtc "caseDicts/postProcessing/surfaceFieldValue/patch.cfg"
+	...
+\end{lstlisting}
+
+\begin{lstlisting}[style=terminal]
+	# compute average pressure in inlet 
+	postProcess -func inletAveragePressure
+\end{lstlisting}
+
+\end{itemize}
 
 \tip{The command \terminalcmd{postProcess -list} will list all the functions available.}
 
-\subsection{Basic Visualization in paraview}
+Besides the screen, the information from \terminalcmd{postProcess} is also saved in the 
+\filename{postProcessing} folder. In order to plot the results of a post-processing 
+function (pressure average in inlet patch, for instance), the utility 
+\terminalcmd{foamMonitor} is used
+
+\begin{lstlisting}[style=terminal] 
+	foramMonitor postProcessing/inletAveragePressure/0.3/surfaceFieldValue.dat
+\end{lstlisting}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=\linewidth]{foamMonitorPressure}
+	\caption[Monitoring average pressure in inlet]{}
+	\label{fig:foammonitorpressure}
+\end{figure}
+
+\section{Basic Visualization in paraview}
 Usually the program \terminalcmd{paraview} is used to visualize the results from OpenFOAM simulations. A wrapper \terminalcmd{paraFoam} is available to call the 
 program after performing some internal operations
 
@@ -375,6 +426,9 @@ Click on the "Apply" button. By default, you will the pressure distribution (Fig
 	\label{fig:parafoam002}
 \end{figure}
 
+\subsection{Plotting residuals}
+
+In the last section we have seen how to monitor residuals from the log file. 
 
 % ========== SECTION 6: TROUBLESHOOTING ==========
 \section{Common Issues and Troubleshooting}
