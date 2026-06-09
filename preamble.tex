@@ -17,6 +17,7 @@
 \usepackage{ulem}				 % For \sout (stricking out...)
 \usepackage[english]{babel}
 \usepackage{float}
+\usepackage{upquote}
 
 % ========== CUSTOM COLORS ==========
 \definecolor{codebg}{RGB}{240, 245, 250}
@@ -42,7 +43,8 @@
 	basicstyle=\ttfamily\small\color{cmdcolor},
 	backgroundcolor=\color{black!5},
 	frame=none,
-	columns=fullflexible
+	columns=fullflexible,
+	literate
 }
 
 % Custom style for OpenFOAM files
@@ -67,7 +69,7 @@
 	filecolor=magenta,
 	urlcolor=cyan,
 	pdftitle={OpenFOAM Tutorial: pitzDaily with simpleFoam},
-	pdfauthor={Your Name},
+	pdfauthor={Robert Castilla - CATMech UPC},
 	pdfsubject={CFD with OpenFOAM},
 	pdfkeywords={OpenFOAM, CFD, simpleFoam, pitzDaily, terminal}
 }
