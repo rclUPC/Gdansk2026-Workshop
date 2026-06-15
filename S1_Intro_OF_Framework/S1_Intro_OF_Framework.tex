@@ -24,14 +24,7 @@
 \author{Robert Castilla \\ CATMech - Universitat Politècnica de Catalunya \\ Department of Fluid Mechanics}
 \date{2025-26 \\ Version 1.0}
 
-\publishers{\textbf{Learning Objectives:}
-\begin{itemize}
-    \item Navigate OpenFOAM case directory structure
-    \item Understand basic OpenFOAM file formats
-    \item Run a simple transient simulation
-    \item Analyze basic results in terminal
-    \item Troubleshoot common errors
-\end{itemize}}
+
 
 \maketitle
 
@@ -45,6 +38,21 @@ making this ideal for remote servers and building core CFD skills.
 
 \tableofcontents
 \newpage
+
+
+\section*{Learning Objectives}
+By the end of this tutorial the student will be able to
+	
+	\begin{enumerate}
+		\item \textbf{Navigate} OpenFOAM case directory structure
+		
+		\item \textbf{Understand} basic OpenFOAM file formats
+		
+		\item \textbf{Run} a simple transient simulation
+		
+		\item \textbf{Analyze} basic results in terminal
+	\end{enumerate}
+	
 
 % ========== SECTION 1: INTRODUCTION ==========
 \section{Introduction and Theoretical Background}
@@ -390,7 +398,7 @@ function (pressure average in inlet patch, for instance), the utility
 \terminalcmd{foamMonitor} is used
 
 \begin{lstlisting}[style=terminal] 
-	foramMonitor postProcessing/inletAveragePressure/0.3/surfaceFieldValue.dat
+	foamMonitor postProcessing/inletAveragePressure/0.3/surfaceFieldValue.dat
 \end{lstlisting}
 
 \begin{figure}[H]
@@ -399,6 +407,54 @@ function (pressure average in inlet patch, for instance), the utility
 	\caption[Monitoring average pressure in inlet]{}
 	\label{fig:foammonitorpressure}
 \end{figure}
+
+\subsection{Plotting residuals}
+
+In the last section we have seen how to monitor residuals from the log file. But it is also possible to save the residuals in a data-file in order to post-process them with \terminalcmd{foamMonitor} or any other application (a Python script, for instance)
+
+In order to log the residuals in run time, the function has to be added in the \filename{system} folder with
+
+\begin{lstlisting}[style=terminal]
+	foamGetDict solverInfo
+\end{lstlisting} 
+
+It will give two options. Usually it is better the first one.
+
+\subsubsection{Exercise with runtime post-processing}
+
+Let's run again the previous simulation, but this time with computation, in run-time, of
+\begin{enumerate}
+	\item Residuals
+	\item Total pressure
+	\item Average of total pressure in inlet and outlet
+	\item Vorticity and second invariant of velocity gradient tensor, $Q$
+\end{enumerate} 
+
+Go back to the case root and clean it
+
+\begin{lstlisting}[style=terminal]
+	foamListTimes -rm
+\end{lstlisting} 
+
+Get the required dictionaries
+
+\begin{lstlisting}[style=terminal]
+	# Get the function to record residuals
+	foamGetDict solverInfo
+	# Get the function to compute toal pressure
+	foamGetDict totalPressureIncompressible
+	# Get the functions to compute total pressure in inlet and outlet
+	foamGetDict patchAverage
+	# move this file to a personalized function for inlet patch
+	mv system/patchAverage system/inletTotalPressureAverage
+	foamGetDict patchAverage
+	# move this file to a personalized function for inlet patch
+	mv system/patchAverage system/outletTotalPressureAverage
+\end{lstlisting} 
+
+Edit the function fi
+
+
 
 \section{Basic Visualization in paraview}
 Usually the program \terminalcmd{paraview} is used to visualize the results from OpenFOAM simulations. A wrapper \terminalcmd{paraFoam} is available to call the 
@@ -426,9 +482,7 @@ Click on the "Apply" button. By default, you will the pressure distribution (Fig
 	\label{fig:parafoam002}
 \end{figure}
 
-\subsection{Plotting residuals}
 
-In the last section we have seen how to monitor residuals from the log file. 
 
 % ========== SECTION 6: TROUBLESHOOTING ==========
 \section{Common Issues and Troubleshooting}
