@@ -447,14 +447,60 @@ Get the required dictionaries
 	foamGetDict patchAverage
 	# move this file to a personalized function for inlet patch
 	mv system/patchAverage system/inletTotalPressureAverage
-	foamGetDict patchAverage
-	# move this file to a personalized function for inlet patch
-	mv system/patchAverage system/outletTotalPressureAverage
+	# copy this file for the oulet patch
+	cp system/inletTotalPressureAverage system/outletTotalPressureAverage
+	# Get the functions to compute voriticy and Q
+	foamGet vorticity
+	foamGet Q
 \end{lstlisting} 
 
-Edit the function fi
+Edit the function files to fit the simulation requirements. 
 
+The \filename{system/solverInfo} should look like that:
 
+\begin{lstlisting}
+	#includeEtc "caseDicts/postProcessing/numerical/solverInfo.cfg"
+	
+	fields (p U k omega);
+\end{lstlisting} 
+
+The \filename{system/totalPressureIncompressible} is like that:
+\begin{lstlisting}
+    #includeEtc "caseDicts/postProcessing/pressure/totalPressureIncompressible.cfg"
+ 
+ 	pRef    0.0;
+ 	rhoInf  1.2;
+ 
+ 	executeControl timeStep;
+ 
+\end{lstlisting}
+
+Change the density in function of the fluid. The keyword for \ofkeyword{executeControl} is included in order the compute total pressure in every time step, to compute average values in the next
+functions. If this statement is not included, by default it is executed and written just in the \ofkeyword{writeTime}, i.e. in the times when fields are written fo disc.
+The \\
+\filename{system/inletTotalPressureAverage} file
+is like that:
+
+\begin{lstlisting}
+name    inlet;
+fields  (total(p));
+
+operation areaAverage;
+#includeEtc "caseDicts/postProcessing/surfaceFieldValue/patch.cfg"
+\end{lstlisting} 
+
+and the file \filename{system/inletTotalPressureAverage} is the same, but with the \texttt{name outlet;} statement. The functions \filename{system/vorticity} and \filename{system/Q} have to
+kept unmodified.
+
+Finally, in order the solver to read all this functions, they have to be included in the \filename{system/controlDict} file:
+
+\begin{lstlisting}
+	name    inlet;
+	fields  (total(p));
+	
+	operation areaAverage;
+	#includeEtc "caseDicts/postProcessing/surfaceFieldValue/patch.cfg"
+\end{lstlisting} 
 
 \section{Basic Visualization in paraview}
 Usually the program \terminalcmd{paraview} is used to visualize the results from OpenFOAM simulations. A wrapper \terminalcmd{paraFoam} is available to call the 
@@ -466,16 +512,16 @@ program after performing some internal operations
 paraFoam
 \end{lstlisting}
 
-\begin{figure}[h]
+\begin{figure}[H]
 	\centering
 	\includegraphics[width=\linewidth]{paraFoam001}
 	\caption{Start screen for paraview, called with \terminalcmd{paraFoam}.}
 	\label{fig:parafoam001}
 \end{figure}
 
-Click on the "Apply" button. By default, you will the pressure distribution (Figure \ref{fig:parafoam002}).
+Click on the \ofkeyword{Apply}  button. By default, you will the pressure distribution (Figure \ref{fig:parafoam002}).
 
-\begin{figure}[h]
+\begin{figure}[H]
 	\centering
 	\includegraphics[width=\linewidth]{paraFoam002}
 	\caption{Pressure distribution of the flow.}
