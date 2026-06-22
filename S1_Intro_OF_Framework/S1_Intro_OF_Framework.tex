@@ -39,6 +39,8 @@ making this ideal for remote servers and building core CFD skills.
 \tableofcontents
 \newpage
 
+\fbox{
+	\parbox{10cm}{
 
 \section*{Learning Objectives}
 By the end of this tutorial the student will be able to
@@ -50,10 +52,10 @@ By the end of this tutorial the student will be able to
 		
 		\item \textbf{Run} a simple transient simulation
 		
-		\item \textbf{Analyze} basic results in terminal
+		\item \textbf{Analyze} basic results in terminal and \terminalcmd{paraview}
 	\end{enumerate}
-	
-
+}
+}
 % ========== SECTION 1: INTRODUCTION ==========
 \section{Introduction and Theoretical Background}
 
@@ -420,7 +422,7 @@ In order to log the residuals in run time, the function has to be added in the \
 
 It will give two options. Usually it is better the first one.
 
-\subsubsection{Exercise with runtime post-processing}
+\subsubsection{Runtime post-processing and monitoring}
 
 Let's run again the previous simulation, but this time with computation, in run-time, of
 \begin{enumerate}
@@ -428,6 +430,7 @@ Let's run again the previous simulation, but this time with computation, in run-
 	\item Total pressure
 	\item Average of total pressure in inlet and outlet
 	\item Vorticity and second invariant of velocity gradient tensor, $Q$
+	\item Wall shear stress and $y^+$
 \end{enumerate} 
 
 Go back to the case root and clean it
@@ -449,9 +452,11 @@ Get the required dictionaries
 	mv system/patchAverage system/inletTotalPressureAverage
 	# copy this file for the oulet patch
 	cp system/inletTotalPressureAverage system/outletTotalPressureAverage
-	# Get the functions to compute voriticy and Q
-	foamGet vorticity
-	foamGet Q
+	# Get the functions to compute vorticity, Q, wall shear stress and yPlus
+	foamGetDict vorticity
+	foamGetDict Q
+	foamGetDict wallShearStress
+	foamGetDict yPlus
 \end{lstlisting} 
 
 Edit the function files to fit the simulation requirements. 
@@ -489,18 +494,70 @@ operation areaAverage;
 #includeEtc "caseDicts/postProcessing/surfaceFieldValue/patch.cfg"
 \end{lstlisting} 
 
-and the file \filename{system/inletTotalPressureAverage} is the same, but with the \texttt{name outlet;} statement. The functions \filename{system/vorticity} and \filename{system/Q} have to
+and the file \filename{system/inletTotalPressureAverage} is the same, but with the 
+\texttt{name outlet;} statement. The functions \filename{system/vorticity}, 
+\filename{system/Q}, \filename{system/wallShearStress} and 
+\filename{system/yPlus} have to be
 kept unmodified.
 
-Finally, in order the solver to read all this functions, they have to be included in the \filename{system/controlDict} file:
+Finally, in order the solver to read all this functions, they have to be included in the \filename{system/controlDict} file. Include this at the end of the file:
 
 \begin{lstlisting}
-	name    inlet;
-	fields  (total(p));
-	
-	operation areaAverage;
-	#includeEtc "caseDicts/postProcessing/surfaceFieldValue/patch.cfg"
+functions{
+	#includeFunc solverInfo
+	#includeFunc totalPressureIncompressible
+	#includeFunc inletTotalPressureAverage
+	#includeFunc outletTotalPressureAverage	
+	#includeFunc vorticity
+	#includeFunc Q
+	#includeFunc wallShearStress
+	#includeFunc yPlus
+}
+
 \end{lstlisting} 
+
+Run the solver again with
+\begin{lstlisting}[style=terminal]
+foamJob -s -log-app pimpleFoam
+\end{lstlisting}
+and monitor the residuals with
+\begin{lstlisting}[style=terminal]
+foamMonitor -l postProcessing/solverInfo/0/solverInfo.dat
+\end{lstlisting}
+
+\warning{The option \terminalcmd{-l} is to plot $y$-axes with logarithm scale.}
+
+The output should be similar to Figure \ref{fig:residuals}
+
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=1\linewidth]{residuals}
+	\caption{Plot of residuals with \terminalcmd{foamMonitor}.}
+	\label{fig:residuals}
+\end{figure}
+
+Plot time evolution of total pressure in inlet
+\begin{lstlisting}[style=terminal]
+foamMonitor postProcessing/inletTotalPressureAverage/0/surfaceFieldValue.dat
+\end{lstlisting}
+and outlet
+\begin{lstlisting}[style=terminal]
+foamMonitor postProcessing/outletTotalPressureAverage/0/surfaceFieldValue.dat
+\end{lstlisting}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=1\linewidth]{inletTotalPressure}
+	\caption{Inlet total pressure}
+	\label{fig:inlettotalpressure}
+\end{figure}
+\begin{figure}
+	\centering
+	\includegraphics[width=1\linewidth]{outletTotalPressure1}
+	\caption{Outlet total pressure}
+	\label{fig:outlettotalpressure1}
+\end{figure}
 
 \section{Basic Visualization in paraview}
 Usually the program \terminalcmd{paraview} is used to visualize the results from OpenFOAM simulations. A wrapper \terminalcmd{paraFoam} is available to call the 
@@ -528,7 +585,23 @@ Click on the \ofkeyword{Apply}  button. By default, you will the pressure distri
 	\label{fig:parafoam002}
 \end{figure}
 
+Click on the \ofkeyword{Play} button to see the time evolution of pressure distribution.
 
+Switch the displayed variable to $Q$ \includegraphics{Q_icon}. Note that the range is
+huge both for the positive and negatives values. This  is due to the high gradients
+of velocity in the inlet zone close to the walls. The uniform value of the inlet 
+velocity generates the strong derivatives in the regions close to the solid walls. 
+The actual value of $Q$ in the fluid domain ranges approximately from -10000 to 10000.
+The displayed range can be modified in the \terminalcmd{Rescale to Custom Data Range}
+tool.  Result is shown in figure \ref{fig:parafoamq}, where to strong vortex is placed 
+just after the back-step.
+
+\begin{figure}[H] 			
+	\centering
+	\includegraphics[width=1\linewidth]{paraFoam_Q}
+	\caption{Distribution of $Q$}
+	\label{fig:parafoamq}
+\end{figure}
 
 % ========== SECTION 6: TROUBLESHOOTING ==========
 \section{Common Issues and Troubleshooting}
@@ -538,11 +611,13 @@ Click on the \ofkeyword{Apply}  button. By default, you will the pressure distri
 \item \textbf{Cause}: OpenFOAM environment not sourced
 \item \textbf{Solution}: 
 \begin{lstlisting}[style=terminal]
-source /path/to/OpenFOAM/etc/bashrc
+source /usr/lib/openfoam/openfoam2512/etc/bashrc
+# or just 
+openfoam2512
 \end{lstlisting}
 \end{itemize}
 
-\subsection{Error: "cannot find blockMeshDict"}
+\subsection{Error: "cannot find blockMeshDict" (or any other dictionary)}
 \begin{itemize}
 \item \textbf{Cause}: Not in correct directory or file missing
 \item \textbf{Solution}:
