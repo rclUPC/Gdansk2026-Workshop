@@ -40,7 +40,7 @@ making this ideal for remote servers and building core CFD skills.
 \newpage
 
 \fbox{
-	\parbox{10cm}{
+	\parbox{15cm}{
 
 \section*{Learning Objectives}
 By the end of this tutorial the student will be able to
@@ -111,8 +111,6 @@ deals with kinematic pressure , $\frac{p}{\rho}$, that has units of \unit{m^2/s^
 
 \important{The solver \terminalcmd{pimpleFoam} keeps the name $p$ for the kinematic pressure.}
 
-\newpage
-
 \subsection{Case Overview}
 \begin{table}[h]
 \centering
@@ -142,7 +140,7 @@ Open your terminal and verify OpenFOAM is available:
 foamVersion
 \end{lstlisting}
 
-\important{If you see "command not found," you may need to source the OpenFOAM environment first:}
+\important{If you see "command not found". you may need to source the OpenFOAM environment first:}
 \begin{lstlisting}[style=terminal]
 # For system-wide installation
 source /usr/lib/openfoam/openfoam-2312/etc/bashrc
@@ -172,14 +170,14 @@ cd incompressible/pimpleFoam
 Copy the pitzDaily case in a local folder
 
 \begin{lstlisting}[style=terminal]
-	# Make a local folder
-	mkdir -p $HOME/Tutorials/Tutorial_1
-	
-	# Copy the pitzDaily tutorial in this folder
-	cp -r ./pitzDaily $HOME/Tutorials/Tutorial_1
-	
-	# Go to the tutorial place
-	cd $HOME/Tutorials/Tutorial_1
+# Make a local folder
+mkdir -p $HOME/Tutorials/Tutorial_1
+
+# Copy the pitzDaily tutorial in this folder
+cp -r ./pitzDaily $HOME/Tutorials/Tutorial_1
+
+# Go to the tutorial place
+cd $HOME/Tutorials/Tutorial_1
 \end{lstlisting}
 
 \important{Never play with a tutorial in the OpenFOAM distribution home folder. Always make a copy. In this way you will have always a "clean" copy.}
@@ -199,15 +197,15 @@ tree -L 2
 
 \important{Every OpenFOAM case has this standard structure:}
 \begin{lstlisting}[style=openfoam]
-	pitzDaily/
-	|-- 0/           # Initial and boundary conditions
-	|-- constant/    # Physical properties and mesh
-	|   |-- polyMesh/   # Mesh files
-	|   `-- transportProperties
-	\-- system/      # Solution control
-	    |-- controlDict
-	    |-- fvSchemes
-	    `-- fvSolution
+pitzDaily/
+|-- 0/           # Initial and boundary conditions
+|-- constant/    # Physical properties and mesh
+|   |-- polyMesh/   # Mesh files
+|   \-- transportProperties
+\-- system/      # Solution control
+    |-- controlDict
+    |-- fvSchemes
+    \-- fvSolution
 \end{lstlisting}
 
 \subsection{Examining Key Files}
@@ -275,9 +273,9 @@ foamJob -screen -log-app checkMesh
 The utility \terminalcmd{foamJob} creates a log file.
  
 \begin{lstlisting}[style=terminal]
-	# Check the content of the log files
-	less log.blockMesh
-	less log.checkMesh
+# Check the content of the log files
+less log.blockMesh
+less log.checkMesh
 \end{lstlisting}
 
 \subsection{Running pimpleFoam}
@@ -306,11 +304,11 @@ tail -50 log.pimpleFoam | grep "Final residual"
 Plot it using \terminalcmd{gnuplot}
 
 \begin{lstlisting}[style=terminal]
-	     # Generate residual files from the log file
-	     foamLog log.pimpleFoam
-	
-	     # Visualize the residuals of the main variables with gnuplot
-	     gnuplot
+# Generate residual files from the log file
+foamLog log.pimpleFoam
+
+# Visualize the residuals of the main variables with gnuplot
+gnuplot
 gnuplot> set logscale y
 gnuplot> plot  'logs/p_0'with lines ,'logs/Ux_0' with lines, 'logs/Uy_0' with lines, 'logs/epsilon_0' with lines, 'logs/k_0' with lines
 \end{lstlisting}
@@ -362,32 +360,32 @@ postProcess -func minMaxMagnitude
 \item Check average pressure in inlet:
 
 \begin{lstlisting}[style=terminal]
-	# Get the dictionary 
-	foamGetDict patchAverage
+# Get the dictionary 
+foamGetDict patchAverage
 \end{lstlisting}
 
 This will add the file \filename{system/patchAverage} to the case. The name of this function can be changed, and it can be edited to define the patch and the variable to be averaged
 
 \begin{lstlisting}[style=terminal]
-	# Rename the function 
-	mv system/patchAverage system/inletAveragePressure
-	# Edit the function (you can use vim, nano, emacs, ...)
-	vim system/inletAveragePressure
+# Rename the function 
+mv system/patchAverage system/inletAveragePressure
+# Edit the function (you can use vim, nano, emacs, ...)
+vim system/inletAveragePressure
 \end{lstlisting}
 
 \begin{lstlisting}[style=output]
-	...
-	name    inlet;
-	fields  (p);
-	
-	operation areaAverage;
-	#includeEtc "caseDicts/postProcessing/surfaceFieldValue/patch.cfg"
-	...
+...
+name    inlet;
+fields  (p);
+
+operation areaAverage;
+#includeEtc "caseDicts/postProcessing/surfaceFieldValue/patch.cfg"
+...
 \end{lstlisting}
 
 \begin{lstlisting}[style=terminal]
-	# compute average pressure in inlet 
-	postProcess -func inletAveragePressure
+# compute average pressure in inlet 
+postProcess -func inletAveragePressure
 \end{lstlisting}
 
 \end{itemize}
@@ -400,7 +398,7 @@ function (pressure average in inlet patch, for instance), the utility
 \terminalcmd{foamMonitor} is used
 
 \begin{lstlisting}[style=terminal] 
-	foamMonitor postProcessing/inletAveragePressure/0.3/surfaceFieldValue.dat
+foamMonitor postProcessing/inletAveragePressure/0.3/surfaceFieldValue.dat
 \end{lstlisting}
 
 \begin{figure}[H]
@@ -417,7 +415,7 @@ In the last section we have seen how to monitor residuals from the log file. But
 In order to log the residuals in run time, the function has to be added in the \filename{system} folder with
 
 \begin{lstlisting}[style=terminal]
-	foamGetDict solverInfo
+foamGetDict solverInfo
 \end{lstlisting} 
 
 It will give two options. Usually it is better the first one.
@@ -436,27 +434,27 @@ Let's run again the previous simulation, but this time with computation, in run-
 Go back to the case root and clean it
 
 \begin{lstlisting}[style=terminal]
-	foamListTimes -rm
+foamListTimes -rm
 \end{lstlisting} 
 
 Get the required dictionaries
 
 \begin{lstlisting}[style=terminal]
-	# Get the function to record residuals
-	foamGetDict solverInfo
-	# Get the function to compute toal pressure
-	foamGetDict totalPressureIncompressible
-	# Get the functions to compute total pressure in inlet and outlet
-	foamGetDict patchAverage
-	# move this file to a personalized function for inlet patch
-	mv system/patchAverage system/inletTotalPressureAverage
-	# copy this file for the oulet patch
-	cp system/inletTotalPressureAverage system/outletTotalPressureAverage
-	# Get the functions to compute vorticity, Q, wall shear stress and yPlus
-	foamGetDict vorticity
-	foamGetDict Q
-	foamGetDict wallShearStress
-	foamGetDict yPlus
+# Get the function to record residuals
+foamGetDict solverInfo
+# Get the function to compute toal pressure
+foamGetDict totalPressureIncompressible
+# Get the functions to compute total pressure in inlet and outlet
+foamGetDict patchAverage
+# move this file to a personalized function for inlet patch
+mv system/patchAverage system/inletTotalPressureAverage
+# copy this file for the oulet patch
+cp system/inletTotalPressureAverage system/outletTotalPressureAverage
+# Get the functions to compute vorticity, Q, wall shear stress and yPlus
+foamGetDict vorticity
+foamGetDict Q
+foamGetDict wallShearStress
+foamGetDict yPlus
 \end{lstlisting} 
 
 Edit the function files to fit the simulation requirements. 
@@ -464,20 +462,19 @@ Edit the function files to fit the simulation requirements.
 The \filename{system/solverInfo} should look like that:
 
 \begin{lstlisting}
-	#includeEtc "caseDicts/postProcessing/numerical/solverInfo.cfg"
-	
-	fields (p U k omega);
+#includeEtc "caseDicts/postProcessing/numerical/solverInfo.cfg"
+
+fields (p U k omega);
 \end{lstlisting} 
 
 The \filename{system/totalPressureIncompressible} is like that:
 \begin{lstlisting}
-    #includeEtc "caseDicts/postProcessing/pressure/totalPressureIncompressible.cfg"
- 
- 	pRef    0.0;
- 	rhoInf  1.2;
- 
- 	executeControl timeStep;
- 
+#includeEtc "caseDicts/postProcessing/pressure/totalPressureIncompressible.cfg"
+
+pRef    0.0;
+rhoInf  1.2;
+
+executeControl timeStep;
 \end{lstlisting}
 
 Change the density in function of the fluid. The keyword for \ofkeyword{executeControl} is included in order the compute total pressure in every time step, to compute average values in the next
@@ -559,6 +556,114 @@ foamMonitor postProcessing/outletTotalPressureAverage/0/surfaceFieldValue.dat
 	\label{fig:outlettotalpressure1}
 \end{figure}
 
+The specific values for the total pressures in outlet and inlet can be obtained for the
+text files
+
+\begin{lstlisting}[style=terminal]
+tail -200 postProcessing/inletTotalPressureAverage/0/surfaceFieldValue.dat
+\end{lstlisting}
+
+\begin{lstlisting}[style=output]
+...
+0.29          	5.354488e+01
+0.290256      	5.354490e+01
+0.290513      	5.354492e+01
+0.290769      	5.354493e+01
+0.291026      	5.354494e+01
+0.291282      	5.354496e+01
+0.291538      	5.354497e+01
+0.291795      	5.354498e+01
+0.292051      	5.354499e+01
+0.292308      	5.354500e+01
+0.292564      	5.354501e+01
+0.292821      	5.354508e+01
+0.293077      	5.354507e+01
+0.293333      	5.354509e+01
+0.29359       	5.354508e+01
+0.293846      	5.354500e+01
+0.294103      	5.354520e+01
+0.294359      	5.354525e+01
+0.294615      	5.354525e+01
+0.294872      	5.354526e+01
+0.295128      	5.354527e+01
+0.295385      	5.354528e+01
+0.295641      	5.354529e+01
+0.295897      	5.354530e+01
+0.296154      	5.354530e+01
+0.29641       	5.354531e+01
+0.296667      	5.354531e+01
+0.296923      	5.354532e+01
+0.297179      	5.354532e+01
+0.297436      	5.354532e+01
+0.297692      	5.354533e+01
+0.297949      	5.354534e+01
+0.298205      	5.354534e+01
+0.298462      	5.354535e+01
+0.298718      	5.354535e+01
+0.298974      	5.354511e+01
+0.299231      	5.354531e+01
+0.299487      	5.354532e+01
+0.299744      	5.354533e+01
+0.3           	5.354533e+01
+\end{lstlisting}
+
+\begin{lstlisting}[style=terminal]
+	tail -200 postProcessing/outletTotalPressureAverage/0/surfaceFieldValue.dat
+\end{lstlisting}
+
+\begin{lstlisting}[style=output]
+...
+0.29          	3.569808e+01
+0.290256      	3.569808e+01
+0.290513      	3.569808e+01
+0.290769      	3.569809e+01
+0.291026      	3.569809e+01
+0.291282      	3.569809e+01
+0.291538      	3.569809e+01
+0.291795      	3.569809e+01
+0.292051      	3.569810e+01
+0.292308      	3.569810e+01
+0.292564      	3.569810e+01
+0.292821      	3.569810e+01
+0.293077      	3.569810e+01
+0.293333      	3.569811e+01
+0.29359       	3.569811e+01
+0.293846      	3.569811e+01
+0.294103      	3.569811e+01
+0.294359      	3.569811e+01
+0.294615      	3.569811e+01
+0.294872      	3.569812e+01
+0.295128      	3.569812e+01
+0.295385      	3.569812e+01
+0.295641      	3.569812e+01
+0.295897      	3.569812e+01
+0.296154      	3.569812e+01
+0.29641       	3.569812e+01
+0.296667      	3.569813e+01
+0.296923      	3.569813e+01
+0.297179      	3.569813e+01
+0.297436      	3.569813e+01
+0.297692      	3.569813e+01
+0.297949      	3.569813e+01
+0.298205      	3.569814e+01
+0.298462      	3.569814e+01
+0.298718      	3.569814e+01
+0.298974      	3.569814e+01
+0.299231      	3.569814e+01
+0.299487      	3.569814e+01
+0.299744      	3.569814e+01
+0.3           	3.569815e+01
+\end{lstlisting}
+
+Així doncs, $p_{0,i} = \qty{53.5}{Pa}$, and $p_{0,o} = \qty{35.7}{Pa}$ and
+\begin{equation}
+	\Delta p_0 = \qty{17.8}{Pa}
+\end{equation}
+and the dimensionless pressure loss coefficient is
+\begin{equation}
+	k = \frac{\Delta p_0}{\frac{1}{2} \rho U^2} = 0.3
+\end{equation}
+
 \section{Basic Visualization in paraview}
 Usually the program \terminalcmd{paraview} is used to visualize the results from OpenFOAM simulations. A wrapper \terminalcmd{paraFoam} is available to call the 
 program after performing some internal operations
@@ -593,7 +698,8 @@ of velocity in the inlet zone close to the walls. The uniform value of the inlet
 velocity generates the strong derivatives in the regions close to the solid walls. 
 The actual value of $Q$ in the fluid domain ranges approximately from -10000 to 10000.
 The displayed range can be modified in the \terminalcmd{Rescale to Custom Data Range}
-tool.  Result is shown in figure \ref{fig:parafoamq}, where to strong vortex is placed 
+tool.  Result is shown in figure \ref{fig:parafoamq}, where to strong vortex, 
+identified by positive values of $Q$, is placed 
 just after the back-step.
 
 \begin{figure}[H] 			
@@ -602,6 +708,52 @@ just after the back-step.
 	\caption{Distribution of $Q$}
 	\label{fig:parafoamq}
 \end{figure}
+
+Figure \ref{fig:streamlines} shows the flow streamlines. This is obtained with the 
+\terminalcmd{Stream Tracer} filter, placing the line, parallel to the $y$-axis, in 
+$x = \qty{0.07}{m}$ and with a resolution of 100 lines.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=\linewidth]{streamLines}
+	\caption{Flow streamlines. The background is the $Q$ distribution.}
+	\label{fig:streamlines}
+\end{figure}
+´
+Let's we now identify the exact point of reattachment of the flow after the step. 
+
+In the main item in the \terminalcmd{Pipeline browser} select only 
+the \texttt{patch/lowerWall} in \terminalcmd{Mesh Regions}. In the screen only 
+this patch will be visible. In the \terminalcmd{Filter - Data Analysis} menu, select
+\terminalcmd{Plot Data}. A new window will be created in the canvas, with plots of
+the main variables in this patch.
+
+Unable the \terminalcmd{Use Index as XAxis} tick and select \terminalcmd{Points\_X} as 
+\terminalcmd{X Array Name}. Result is shown in Figure \ref{fig:wallshearstressplot}.
+Note that flow is reattached when the sign of the shear stress changes from positive 
+to negative, in $x=\qty{180}{mm}$.
+
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=\linewidth]{wallShearStress_Plot}
+	\caption{Plot of wall shear stress in the lower wall patch.}
+	\label{fig:wallshearstressplot}
+\end{figure}
+
+Finally, we plot the value of $y^+$ for both lower and upper walls 
+(Figure \ref{fig:yplus}). Note that, specially for upper wall, the value of $y^+$ falls
+inside the laminar sub-layer ( $y^+ \lessapprox 11$ ). This is handled by the wall
+function defined in \filename{0/nut} by imposing $\nu_t = 0$ in order to avoid
+overestimation of the wall shear stress. 
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=\linewidth]{yPlus}
+	\caption{Plor y $y^+$ distribution in upper and lower walls.}
+	\label{fig:yplus}
+\end{figure}
+
 
 % ========== SECTION 6: TROUBLESHOOTING ==========
 \section{Common Issues and Troubleshooting}
@@ -645,7 +797,7 @@ ls system
 % ========== SECTION 7: EXERCISES ==========
 \section{Student Exercises and Extensions}
 
-\subsection{Basic Exercises (Required)}
+\subsection{Basic Exercises}
 \begin{enumerate}
 
 \item \textbf{Boundary Condition Modification}:
@@ -658,7 +810,17 @@ ls system
 \item \textbf{Turbulence Model Comparison}:
 \begin{itemize}
 \item Change from $k$-$\epsilon$ to $k$-$\omega$ SST in \filename{constant/turbulenceProperties}
-\item \textbf{Question}: Which model converges faster? Which gives higher $k$ values?
+
+Use the command \terminalcmd{foamCloneCase} to copy a "naked" case. 
+
+\tip{You will have to change several files. Check some tutorial with this turbulence
+model for information. }
+
+\tip{For computation of turbulence variables, you can see this 
+	\hyperlink{https://www.cfd-online.com/Wiki/Turbulence_free-stream_boundary_conditions}{web page in CFD online}. Get a relationship between $\varepsilon$ and $\omega$
+	from the expression in this web page. The computation of the new field can be done with the proper dictionary. See examples in \\
+	 \filename{\$FOAM\_TUTORIALS/incompressible/pisoFoam/RAS/cavity/system/FOs}}
+\item \textbf{Question}: Which model converges faster? Which gives higher $k$ values? Is the dimensionless pressure loss coefficient changing?
 \end{itemize}
 \end{enumerate}
 
@@ -669,58 +831,7 @@ ls system
 \item Modify \filename{system/blockMeshDict} to double cells in x-direction
 \item Compare velocity profiles at outlet
 \end{itemize}
-
-\item \textbf{Custom Geometry}:
-\begin{itemize}
-\item Create a simple 2D channel (modify blockMeshDict)
-\item Reuse boundary conditions from pitzDaily
-\item Compare pressure drop with analytical solution
-\end{itemize}
 \end{enumerate}
-
-% ========== SECTION 8: DELIVERABLES ==========
-\section{Deliverables and Assessment}
-
-Submit the following to Moodle:
-
-\subsection{Required Files}
-\begin{enumerate}
-\item Modified \filename{system/controlDict} with your student ID in comments
-\item Final \filename{log.simpleFoam} file
-\item Screen capture of terminal showing:
-\begin{itemize}
-\item Successful \terminalcmd{blockMesh} execution
-\item Final residuals from \terminalcmd{simpleFoam}
-\item Output of \terminalcmd{checkMesh}
-\end{itemize}
-\end{enumerate}
-
-\subsection{Report Questions}
-Answer the following in a PDF report:
-\begin{enumerate}
-\item What are the final residuals for $U_x$, $U_y$, $p$, $k$, and $\epsilon$?
-\item How many iterations were needed for convergence?
-\item What is the maximum pressure in the domain? Minimum?
-\item Based on the recirculation zone length, what is the reattachment length?
-\item If you changed parameters in exercises, discuss how they affected results.
-\end{enumerate}
-
-\subsection{Submission Format}
-\begin{itemize}
-\item \textbf{Filename}: \texttt{StudentID\_pitzDaily.zip}
-\item \textbf{Contents}:
-\begin{verbatim}
-StudentID_pitzDaily/
-|-- report.pdf
-|-- controlDict_modified
-|-- log.simpleFoam
-|-- screenshots/
-|   |-- blockMesh.png
-|   |-- finalResiduals.png
-|   |-- checkMesh.png
-\-- README.txt (any notes/issues encountered)
-\end{verbatim}
-\end{itemize}
 
 % ========== APPENDIX ==========
 \appendix
@@ -764,9 +875,13 @@ StudentID_pitzDaily/
 \item \textbf{Solver settings}: \filename{system/fvSolution}
 \item \textbf{Discretization schemes}: \filename{system/fvSchemes}
 \item \textbf{Runtime control}: \filename{system/controlDict}
-\item \textbf{Material properties}: \filename{constant/transportProperties}, \filename{constant/turbulenceProperties}
+\item \textbf{Material properties}: \filename{constant/transportProperties} 
+\item \textbf{Turbulence model}: \filename{constant/turbulenceProperties}
 \end{itemize}
 
+% ========== DISCLAIMER ============
+
+\input{disclaimer.tex}
 
 % ========== END DOCUMENT ==========
 \end{document}
