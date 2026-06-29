@@ -92,7 +92,7 @@ The \filename{pitzDaily} case simulates 2D steady, turbulent flow in a backward-
 	\caption{pitzDaily geometry. Lengths are in millimeter.}
 \end{figure}
 
-More information can be found on the \hyperlink{https://www.openfoam.com/documentation/tutorial-guide/3-compressible-flow/3.1-steady-turbulent-flow-over-a-backward-facing-step}{OpenFOAM website}.
+More information can be found on the \href{https://www.openfoam.com/documentation/tutorial-guide/3-compressible-flow/3.1-steady-turbulent-flow-over-a-backward-facing-step}{OpenFOAM website}.
 \subsection{Governing Equations}
 The \terminalcmd{pimpleFoam} solver implements the incompressible Reynolds-Averaged Navier-Stokes (RANS) equations:
 
@@ -477,8 +477,8 @@ rhoInf  1.2;
 executeControl timeStep;
 \end{lstlisting}
 
-Change the density in function of the fluid. The keyword for \ofkeyword{executeControl} is included in order the compute total pressure in every time step, to compute average values in the next
-functions. If this statement is not included, by default it is executed and written just in the \ofkeyword{writeTime}, i.e. in the times when fields are written fo disc.
+Change the density in function of the fluid. The keyword for \ofkeyword{executeControl} is included in order to compute total pressure in every time step, so that average values in the next
+functions can be used. If this statement is not included, by default it is executed and written just in the \ofkeyword{writeTime}, i.e. in the times when fields are written fo disc.
 The \\
 \filename{system/inletTotalPressureAverage} file
 is like that:
@@ -492,7 +492,12 @@ operation areaAverage;
 \end{lstlisting} 
 
 and the file \filename{system/inletTotalPressureAverage} is the same, but with the 
-\texttt{name outlet;} statement. The functions \filename{system/vorticity}, 
+
+\begin{lstlisting}
+name    outlet;
+\end{lstlisting} 
+
+statement. The functions \filename{system/vorticity}, 
 \filename{system/Q}, \filename{system/wallShearStress} and 
 \filename{system/yPlus} have to be
 kept unmodified.
@@ -817,7 +822,7 @@ Use the command \terminalcmd{foamCloneCase} to copy a "naked" case.
 model for information. }
 
 \tip{For computation of turbulence variables, you can see this 
-	\hyperlink{https://www.cfd-online.com/Wiki/Turbulence_free-stream_boundary_conditions}{web page in CFD online}. Get a relationship between $\varepsilon$ and $\omega$
+	\href{https://www.cfd-online.com/Wiki/Turbulence_free-stream_boundary_conditions}{web page in CFD online}. Get a relationship between $\varepsilon$ and $\omega$
 	from the expression in this web page. The computation of the new field can be done with the proper dictionary. See examples in \\
 	 \filename{\$FOAM\_TUTORIALS/incompressible/pisoFoam/RAS/cavity/system/FOs}}
 \item \textbf{Question}: Which model converges faster? Which gives higher $k$ values? Is the dimensionless pressure loss coefficient changing?
@@ -881,7 +886,7 @@ model for information. }
 
 % ========== DISCLAIMER ============
 
-\input{disclaimer.tex}
+\input{../disclaimer.tex}
 
 % ========== END DOCUMENT ==========
 \end{document}
