@@ -12,7 +12,7 @@ FoamFile
     format          ascii;
     arch            "LSB;label=32;scalar=64";
     class           volVectorField;
-    location        "0.64";
+    location        "0";
     object          U.water;
 }
 
