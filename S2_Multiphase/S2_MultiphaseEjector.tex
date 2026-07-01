@@ -20,7 +20,7 @@
 % ========== TITLE PAGE ==========
 \title{Tutorial \#2: Water-air Ejector}
 \subtitle{Multiphase Transient Flow}
-\subject{Workshop on Computational Fluid Dynamics (CFD) \\ with OpenFOAM \\ IMP-PAN Gdansk}
+\subject{Workshop on Computational Fluid Dynamics (CFD) \\ with OpenFOAM \\ IMP-PAN Gda\'nsk}
 \author{Robert Castilla \\ CATMech - Universitat Politècnica de Catalunya \\ Department of Fluid Mechanics}
 \date{2025-26 \\ Version 1.0}
 
@@ -64,17 +64,162 @@ By the end of this tutorial the student will be able to
 
 \subsection{Python virtual environment}
 
+To facilitate the generation of the mesh with \terminalcmd{blockMesh} we are going to 
+use a python code. It is convenient to create first a user virtual environment, so
+that packages can be locally installed. Here follows the procedure
+
+\begin{lstlisting}[style=terminal]
+# Create the virtual environment. Here the name is 'my_env' but it can be any name
+python -m venv my_env
+# Activate the virtual environment
+source ./my_env/bin/activate
+# From now on a '(my_env)' will be shown with prompt
+# To deactivate the virtual environment, just type
+deactivate 
+\end{lstlisting}
+
+The module 
+\href{https://github.com/takaakiaoki/ofblockmeshdicthelper}{ofblockmeshdicthelper}, by 
+A. Takaaki will be used. It has to be installed in the environment with
+
+\begin{lstlisting}[style=terminal]
+pip install 'ofblockmeshdicthelper @git+https://github.com/takaakiaoki/ofblockmeshdicthelper.git'
+\end{lstlisting}
+
+If some other module is needed, just install it with \terminalcmd{pip install <module name>}.
+
+
+\section{Volume of Fluid Approach} 
+
+The clean case can be downloaded from the GitHub repository,
+
+% TODO: instruction to download the case
+
+
+\subsection{Running the Simulation}
+
+The simulation process is split into two automated phases: mesh generation and solver
+execution. Both phases are implemented in shell scripts, to ensure consistent
+and reproducible workflow.
+
+\subsubsection{Mesh generation}
+
+The first step is to create the \filename{system/blockMeshDict} file. It is
+done with the python code \filename{blockMeshDictGen.py}, that load the 
+\terminalcmd{ofblockmeshdicthelper} mentioned in the previous section.
+
+
+Check that the python virtual environment is activated and run
+\begin{lstlisting}[style=terminal]
+python blockMeshDictGen.py
+\end{lstlisting}
+The file \filename{system/blockMeshDict} has been created.
+
+Run the script for the mesh generation
+
+\begin{lstlisting}[style=terminal]
+./genMesh.scr
+\end{lstlisting}
+
+\warning{It the command fails, it is probable that it is not executable. Change it 
+with}
+\begin{lstlisting}[style=terminal]
+chmod +x ./genMesh.scr
+\end{lstlisting}
+
+Have a look at the script and discuss the meaning of each command. Check the output
+of the \terminalcmd{checkMesh} command and 
+visualize the mesh with \terminalcmd{paraFoam}
+
+\subsubsection{Initialization and solver execution}
+
+The \filename{runCase.scr} performs several tasks:
+
+\begin{enumerate}
+	\item It copies the content of the folder \filename{0.orig} to the forlde 
+	\filename{0}.
+	\item It initializes the phase distribution with the command 
+	\terminalcmd{setFields} and the dictionary \filename{system/setFieldsDict}
+	\item It runs the \terminalcmd{interFoam} solver. 
+\end{enumerate}
+
+The simulation will take about 10 minutes. In the meanwhile the configuration files of
+the case can be studied:
+
+\begin{itemize}
+	\item \filename{system/controlDict} and functions definitions
+	\item \filename{0.orig/*}
+	\item \filename{constant/*}
+	\item \filename{system/fvSolution} and \filename{system/fvSchemes}
+\end{itemize}
 
 
 
-% ========== SECTION 4: RUNNING THE SIMULATION ==========
-\section{Running the Simulation}
+
+\subsection{Post-Processing in Terminal}
+
+Residuals of the simulation can be check with
+
+\begin{lstlisting}[style=terminal]
+foamMonitor -l postProcessing/solverInfo/0/solverInfo.dat
+\end{lstlisting}
+
+\begin{center}
+	\includegraphics[width=\linewidth]{Figures/residuals}
+\end{center}
 
 
-% ========== SECTION 5: POST-PROCESSING ==========
-\section{Post-Processing in Terminal}
+Also flow rates from main and secondary inlets
 
-\section{Visualization in paraview}
+\begin{lstlisting}[style=terminal]
+foamMonitor postProcessing/flowRatePatch/0/surfaceFieldValue.dat
+\end{lstlisting}
+\begin{center}
+	\includegraphics[width=\linewidth]{Figures/flowRate}
+\end{center}
+
+\begin{lstlisting}[style=terminal]
+	foamMonitor postProcessing/flowRatePatchMain/0/surfaceFieldValue.dat
+\end{lstlisting}
+\begin{center}
+	\includegraphics[width=\linewidth]{Figures/flowRateMain}
+\end{center}
+
+Note that the flow rate in main secondary inlets are\footnote{These are the flow rate
+for \ofkeyword{wedge} of the mesh. For the complete flow rate, these numbers have to 
+be multiplied by the proportionality factor od total and wedge sections.}
+\begin{eqnarray*}
+	Q_s &=& \qty{6.35e-5}{m^3/s} 
+	\\
+	Q_m &=& \qty{5.58e-5}{m^3/s}
+\end{eqnarray*}
+According to that the dimensionless \textbf{entrainment ratio} is
+\begin{equation*}
+	M =  \frac{Q_s}{Q_m} = 1.14
+\end{equation*} 
+
+Pressure in the inlet patch can also be visualized (do it by yourself)
+
+\subsection{Visualization in paraview}
+
+Progress of water and air entrainment in the ejector can be seen in paraview, and even
+an animation can be created with the \terminalcmd{foamCreateVideo} utility. Phase 
+fraction and velocity distributions are shown in Figures \ref{fig:vofalphaplot}
+and \ref{fig:vofuplot}.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=\linewidth]{Figures/VOFalphaPlot}
+	\caption{Water-air fraction distribution for $t = \qty{0.2}{s}$}
+	\label{fig:vofalphaplot}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=\linewidth]{Figures/VOFUPlot}
+	\caption{Velocity distribution for $t = \qty{0.2}{s}$.}
+	\label{fig:vofuplot}
+\end{figure}
 
 % ========== SECTION 7: EXERCISES ==========
 \section{Student Exercises and Extensions}
