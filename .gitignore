@@ -7,3 +7,4 @@ myNotes.md
 *.fdb_latexmk
 *.synctex.gz
 S1_Intro_OF_Framework/Gdansk2026.txss2
+.ipynb_checkpoints
