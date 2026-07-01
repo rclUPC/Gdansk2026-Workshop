@@ -1,0 +1,15 @@
+#!/bin/bash
+
+foamDictionary system/blockMeshDict -entry scale -set 0.001
+
+foamDictionary system/controlDict -entry writeFormat -set binary
+
+foamJob -log-app blockMesh
+sleep 1
+
+foamJob -log-app extrudeMesh
+
+foamJob -log-app checkMesh
+
+#foamDictionary system/controlDict -entry writeFormat -set ascii
+
