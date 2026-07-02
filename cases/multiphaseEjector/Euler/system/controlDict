@@ -14,7 +14,7 @@ FoamFile
     object          controlDict;
 }
 
-application     interFoam;
+application     twoPhaseEulerFoam;
 
 startFrom       startTime;
 
