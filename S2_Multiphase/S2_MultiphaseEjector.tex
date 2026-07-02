@@ -89,7 +89,7 @@ pip install 'ofblockmeshdicthelper @git+https://github.com/takaakiaoki/ofblockme
 If some other module is needed, just install it with \terminalcmd{pip install <module name>}.
 
 
-\section{Volume of Fluid Approach} 
+\section{Part A: Volume of Fluid Approach} 
 
 The clean case can be downloaded from the GitHub repository,
 
@@ -221,6 +221,20 @@ and \ref{fig:vofuplot}.
 	\label{fig:vofuplot}
 \end{figure}
 
+\section{Part B: Euler-Euler Approach}
+
+The case can be also downloaded from the GitHub repository.
+
+The step for mesh generation, setup and running of the solver are exactly the same. There are 
+some key differences on the setup.
+
+\begin{itemize}
+	\item Phase interaction description. In VOF there is only a configuration file with surface
+	tension. In Euler-Euler the interaction between forces has to be completely modeled 
+	through the \filename{constant/phaseProperties} dictionary. For a detailed description of all the items, the great Master Thesis by Otromke\footnote{Otromke, Malte. 2013. “Implementation and Comparison of Correlations for Interfacial Forces in a Gas-Liquid System within an Euler-Euler Framework.”} can be consulted.
+	
+	
+\end{itemize}
 % ========== SECTION 7: EXERCISES ==========
 \section{Student Exercises and Extensions}
 
