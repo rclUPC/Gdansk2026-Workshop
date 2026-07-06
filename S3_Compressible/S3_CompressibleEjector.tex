@@ -1,0 +1,115 @@
+% ==============================================
+% CFD Tutorial Template: OpenFOAM Terminal Basics
+% Class: scrartcl (KOMA-Script) - optimized for tutorials
+% Content: pitzDaily with simpleFoam
+% ==============================================
+
+\documentclass[
+    parskip=half,      % Space between paragraphs (better for steps)
+    DIV=12,            % Optimal margins for readability
+    headings=normal,   % Professional heading sizes
+    fontsize=11pt,     % Slightly larger for screen reading
+    english            % Language setting
+]{scrartcl}
+
+\input{../preamble.tex}
+
+% ========== DOCUMENT START ==========
+\begin{document}
+
+% ========== TITLE PAGE ==========
+\title{Tutorial \#3: Compressible air Ejector}
+\subtitle{Supersonic Transient and Steady Flow}
+\subject{Workshop on Computational Fluid Dynamics (CFD) \\ with OpenFOAM \\ IMP-PAN Gda\'nsk}
+\author{Robert Castilla \\ CATMech - Universitat Politècnica de Catalunya \\ Department of Fluid Mechanics}
+\date{2025-26 \\ Version 1.0}
+
+
+
+\maketitle
+
+% ========== ABSTRACT ==========
+\begin{abstract}
+
+\end{abstract}
+
+\tableofcontents
+\newpage
+
+\fbox{
+	\parbox{15cm}{
+
+\section*{Learning Objectives}
+By the end of this tutorial the student will be able to
+	
+	\begin{enumerate}
+		\item \textbf{Navigate} OpenFOAM case directory structure
+		
+		\item \textbf{Understand} basic OpenFOAM file formats
+		
+		\item \textbf{Run} a simple transient simulation
+		
+		\item \textbf{Analyze} basic results in terminal and \terminalcmd{paraview}
+	\end{enumerate}
+}
+}
+% ========== SECTION 1: INTRODUCTION ==========
+\section{Introduction and Theoretical Background}
+
+
+\subsection{Case Overview}
+
+% ========== SECTION 2: TERMINAL SETUP ==========
+\section{Case Setup}
+
+
+
+
+\section{Part A: Density based explicit solver \terminalcmd{rhoCentralFoam}} 
+
+
+\subsection{Running the Simulation}
+
+
+\subsubsection{Mesh generation}
+
+
+
+\subsubsection{Initialization and solver execution}
+
+
+
+
+
+\subsection{Post-Processing in Terminal}
+
+
+\subsection{Visualization in paraview}
+
+
+
+\section{Part B: Density based implicit solver \terminalcmd{HiSA}}
+
+
+\subsection{Post-Processing in Terminal}
+
+
+\subsection{Visualization with paraview}
+
+
+
+\section{Student Exercises and Extensions}
+
+\subsection{Basic exercises for Part A: VOF}
+
+
+\subsection{Basic exercises for Part B: Euler-Euler}
+
+
+
+% ========== DISCLAIMER ============
+
+\input{../disclaimer.tex}
+
+% ========== END DOCUMENT ==========
+\end{document}
