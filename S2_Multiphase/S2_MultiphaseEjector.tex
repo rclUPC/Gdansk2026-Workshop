@@ -165,7 +165,7 @@ foamMonitor -l postProcessing/solverInfo/0/solverInfo.dat
 \end{lstlisting}
 
 \begin{center}
-	\includegraphics[width=\linewidth]{Figures/residuals}
+	\includegraphics[width=\linewidth]{Figures/VOFresiduals}
 \end{center}
 
 
@@ -175,14 +175,14 @@ Also flow rates from main and secondary inlets
 foamMonitor postProcessing/flowRatePatch/0/surfaceFieldValue.dat
 \end{lstlisting}
 \begin{center}
-	\includegraphics[width=\linewidth]{Figures/flowRate}
+	\includegraphics[width=\linewidth]{Figures/VOFflowRate}
 \end{center}
 
 \begin{lstlisting}[style=terminal]
 	foamMonitor postProcessing/flowRatePatchMain/0/surfaceFieldValue.dat
 \end{lstlisting}
 \begin{center}
-	\includegraphics[width=\linewidth]{Figures/flowRateMain}
+	\includegraphics[width=\linewidth]{Figures/VOFflowRateMain}
 \end{center}
 
 Note that the flow rate in main secondary inlets are\footnote{These are the flow rate
@@ -225,18 +225,137 @@ and \ref{fig:vofuplot}.
 
 The case can be also downloaded from the GitHub repository.
 
+\subsection{Running the simulation}
 The step for mesh generation, setup and running of the solver are exactly the same. There are 
 some key differences on the setup.
 
 \begin{itemize}
-	\item Phase interaction description. In VOF there is only a configuration file with surface
+	\item \textbf{Phase interaction description}. In VOF there is only a configuration file with surface
 	tension. In Euler-Euler the interaction between forces has to be completely modeled 
 	through the \filename{constant/phaseProperties} dictionary. For a detailed description of all the items, the great Master Thesis by Otromke\footnote{Otromke, Malte. 2013. “Implementation and Comparison of Correlations for Interfacial Forces in a Gas-Liquid System within an Euler-Euler Framework.”} can be consulted.
-	
-	
+	\item \textbf{Fields files and initial condition}s. The main characteristic of Euler-Euler 
+	approach is that fluid flow equations are \textbf{solved for both fluids}. That
+	mains that two sets of field files are needed. For instance, there is a \filename{0/U.water} file but also a \filename{0/U.air} file.
+	\item \textbf{Turbulence modeling}. Likewise, two turbulence modeling files are needed, one
+	for each phase. They can be different, but compatible.
 \end{itemize}
+
+\subsection{Post-Processing in Terminal}
+
+The command to see the residuals is the same as with the VOF solver
+
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=\linewidth]{Figures/EulerResiduals}
+	\caption{Residuals for the Euler-Euler approach.}
+	\label{fig:eulerresiduals}
+\end{figure}
+
+Follow the plots for flow rates in main and secondary patches.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=1\linewidth]{Figures/EulerFlowRate}
+	\caption{Flow rate in the secondary inlet.}
+	\label{fig:eulerflowrate}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=\linewidth]{Figures/EulerFlowRateMain}
+	\caption{Flow rate in the main inlet}
+	\label{fig:eulerflowratemain}
+\end{figure}
+
+Note that the entrainment ratio computation gives a very similar value to that of VOF
+simulation
+
+\subsection{Visualization with paraview}
+
+
+Let's make a couple of filters to make better visualization. First, 
+\terminalcmd{Reflect} filter is used to show the complete section of the ejector. 
+Figure \ref{fig:euleralphaplot} show the fraction of water.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=\linewidth]{Figures/EulerAlphaPlot}
+	\caption{Volume fraction of water for the Euler-Euler approach}
+	\label{fig:euleralphaplot}
+\end{figure}
+
+Secondly, to see velocity we have to decide between water 
+(Figure \ref{fig:euleruplot}.a) and air (Figure \ref{fig:euleruplot}.b).
+
+
+\begin{figure}[H]
+	\centering
+	a)
+	\includegraphics[width=0.45\linewidth]{Figures/EulerUwaterPlot}
+	b)
+	\includegraphics[width=0.45\linewidth]{Figures/EulerUairPlot}
+	\caption{Velocity distribution for water and air phases.}
+	\label{fig:euleruplot}
+\end{figure}
+
+But they can be combined by using the \terminalcmd{Calculator} filter and entering the
+expression
+
+\begin{equation}
+	\mathbf{U} = \alpha_w\mathbf{U}_w + \alpha_a\mathbf{U}_a
+\end{equation}
+
+\begin{center}
+	\includegraphics[width=0.3\linewidth]{Figures/EulerCalculator}
+\end{center}
+
+
+Velocity distribution shown in Figure \ref{fig:euleruplot2} is obtained, which is 
+quite similar to the one in Figure \ref{fig:vofuplot}.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=\linewidth]{Figures/EulerUPlot}
+	\caption{Combined velocity of both phases.}
+	\label{fig:euleruplot2}
+\end{figure}
+
+
 % ========== SECTION 7: EXERCISES ==========
 \section{Student Exercises and Extensions}
+
+\subsection{Basic exercises for Part A: VOF}
+
+\begin{enumerate}
+	\item Effect of Inlet Velocity
+	
+	Modify the water inlet velocity from \qty{2}{m/s} to \qty{4}{m/s}. How does
+	entrainment ratio change? Is the relationship linear?
+	
+	\item Effect of Surface Tension
+	
+	Set surface tension to zero. How does the interface shape change? How does $M$ 
+	change? 
+\end{enumerate}
+
+\subsection{Basic exercises for Part B: Euler-Euler}
+
+\begin{enumerate}
+	\item Drag Model comparison
+	
+	Change drag model for \ofkeyword{(air in water)} from 
+	\ofkeyword{SchillerNaumann} to \ofkeyword{TomiyamaCorrelated}. A 
+	value of 16 will be need in the keyword \ofkeyword{A} (see Master Thesis
+	by Otromke)
+	
+	\item Turbulent Dispersion
+	
+	In this tutorial, turbulent dispersion has not been considered. However, it is
+	an important factor for high Reynolds number flows. Include the usual Burn's 
+	model, with a Schmidt number $\sigma=1.0$.
+	
+\end{enumerate}
 
 
 % ========== DISCLAIMER ============
