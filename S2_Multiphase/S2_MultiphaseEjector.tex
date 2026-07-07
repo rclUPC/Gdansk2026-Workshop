@@ -43,23 +43,100 @@
 By the end of this tutorial the student will be able to
 	
 	\begin{enumerate}
-		\item \textbf{Navigate} OpenFOAM case directory structure
+		\item \textbf{Understand} basic differences between Volume Of Fluid and Euler-Euler 
+		approaches 
 		
-		\item \textbf{Understand} basic OpenFOAM file formats
+		\item \textbf{Run} a simulation of a water ejector with VOF and EE approaches
 		
-		\item \textbf{Run} a simple transient simulation
+		\item \textbf{Compute and analyze} entrainment ratio M 
 		
-		\item \textbf{Analyze} basic results in terminal and \terminalcmd{paraview}
+		\item \textbf{Visualize} basic results of multiphase ejector with \terminalcmd{paraview}
 	\end{enumerate}
 }
 }
 % ========== SECTION 1: INTRODUCTION ==========
 \section{Introduction and Theoretical Background}
 
+In this section a water-air ejector will be simulated. A water-air ejector is a simple 
+device that uses high speed water to provoke  pressure depression and entrain air from 
+another inlet. Both water and air are mixed in the mixing chamber and expelled through a 
+diffuser to recover the pressure lost.
 
+Two approaches will be explored to make this simulation. 
+
+The first approach is the \textbf{Volume Of Fluid (VOF)} method. The equations are basically the same
+as in the previous session, and the interface is tracked with the phase fraction 
+$\alpha \in [0,1]$,
+
+\begin{equation}
+\frac{\partial (\rho \mathbf{U})}{\partial t} + \nabla \cdot (\rho \mathbf{U} \mathbf{U}) = 
+-\nabla p + \nabla \cdot \left[ \mu \left( \nabla \mathbf{U} + \nabla \mathbf{U}^T \right) \right] + \rho \mathbf{g} + \mathbf{F}_\sigma
+\end{equation}  
+with the equation of the phase fraction transport
+\[
+\frac{\partial \alpha}{\partial t} + \nabla \cdot (\alpha \mathbf{U}) = 0
+\]
+and the mixture properties in each cell
+\[
+\rho = \alpha \rho_w + (1-\alpha) \rho_a, \qquad 
+\mu = \alpha \mu_w + (1-\alpha) \mu_a
+\]
+
+Surface tension force is computed with the Continuum Surface Force (CSF) model,
+\[
+\mathbf{F}_\sigma = \sigma \kappa \nabla \alpha, \qquad 
+\kappa = -\nabla \cdot \left( \frac{\nabla \alpha}{|\nabla \alpha|} \right)
+\]
+
+Alternatively, the second approach considered here is the \textbf{Euler-Euler} method, where each phase 
+is treated as interpenetrating continua, with interphase terms for momentum, heat and mass 
+transfer. In this case, several phases can be included, with phase fractions $\alpha_k$, 
+
+\[
+\sum_{k=1}^{N} \alpha_k = 1
+\]
+
+For each phase, continuity has to be fulfilled,
+\begin{equation}
+	\frac{\partial (\alpha_k \rho_k)}{\partial t} + \nabla \cdot (\alpha_k \rho_k \mathbf{U}_k) = 0
+\end{equation}
+as well as the momentum equation,
+\begin{equation}
+\frac{\partial (\alpha_k \rho_k \mathbf{U}_k)}{\partial t} + \nabla \cdot (\alpha_k \rho_k \mathbf{U}_k \mathbf{U}_k) = 
+-\alpha_k \nabla p + \nabla \cdot \left[ \alpha_k \mu_{k,\text{eff}} \left( \nabla \mathbf{U}_k + \nabla \mathbf{U}_k^T \right) \right] + \alpha_k \rho_k \mathbf{g} + \mathbf{M}_{k}
+\end{equation}
+where $\mathbf{M}_{k}$ is the interphase momentum transfer, that includes terms for drag, 
+lift, virtual mass and turbulent dispersion.
+
+
+
+\begin{table}[H]
+	\centering
+	\caption{Comparison of VOF and Euler-Euler approaches}
+	\label{tab:vof_euler_comparison}
+	\begin{tabular}{|p{4cm}|p{4cm}|p{4cm}|}
+		\hline
+		\textbf{Feature} & \textbf{VOF} & \textbf{Euler-Euler} \\
+		\hline
+		Interface representation & Sharp (captured) & Diffuse (interpenetrating) \\
+		\hline
+		Momentum equations & One (mixture) & One per phase \\
+		\hline
+		Interphase forces & Surface tension only & Drag, lift, virtual mass, turbulent dispersion \\
+		\hline
+		Turbulence & Single model (mixture properties) & Per-phase models \\
+		\hline
+		Best for & Stratified, free-surface flows & Dispersed, bubbly, particle-laden flows \\
+		\hline
+		Computational cost & Lower & Higher \\
+		\hline
+	\end{tabular}
+\end{table}
 \subsection{Case Overview}
 
-% ========== SECTION 2: TERMINAL SETUP ==========
+The geometry of the ejector is the one published in the paper by Zhang in 2013
+
+
 \section{Case Setup}
 
 \subsection{Python virtual environment}
