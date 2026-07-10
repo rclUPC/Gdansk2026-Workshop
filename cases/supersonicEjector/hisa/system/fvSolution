@@ -1,0 +1,76 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+|                                                                             |
+|    HiSA: High Speed Aerodynamic solver                                      |
+|    Copyright (C) 2014-2017 Johan Heyns - CSIR, South Africa                 |
+|    Copyright (C) 2014-2017 Oliver Oxtoby - CSIR, South Africa               |
+|                                                                             |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    location    "system";
+    object      fvSolution;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+solvers 
+{
+    "(k|omega|nuTilda)"
+    {
+        solver          smoothSolver;
+        smoother        symGaussSeidel;
+        tolerance       1e-10;
+        relTol          0;
+        minIter         1;
+    }
+
+    "(k|omega|nuTilda)Final"
+    {
+        $nuTilda;
+        tolerance       1e-10;
+        reltol          0;
+        minIter         1;
+    }
+
+    yPsi
+    {
+        solver          GAMG;
+        smoother        GaussSeidel;
+        cacheAgglomeration true;
+        nCellsInCoarsestLevel 10;
+        agglomerator    faceAreaPair;
+        mergeLevels     1;
+        tolerance       1e-5;
+        relTol          0;
+    }
+
+}
+
+flowSolver
+{
+    solver            GMRES;
+    GMRES
+    {
+        inviscidJacobian  LaxFriedrich;
+	viscousJacobian	  laplacian;
+        preconditioner    LUSGS;
+        maxIter           30;
+        nKrylov           4;
+        solverTolRel      1e-1 (1e-1 1e-1 1e-1) 1e-1;
+    }
+}
+
+pseudoTime
+{
+    nPseudoCorr       1000;
+    nPseudoCorrMin    5;
+    pseudoTol         1e-6 (1e-6 1e-6 1e-6) 1e-6;
+    pseudoCoNum       0.2;
+    pseudoCoNumMax    1.0;
+    localTimestepping true;
+}
+
+
+// ************************************************************************* //

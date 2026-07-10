@@ -1,0 +1,10 @@
+#!/bin/bash
+
+foamDictionary system/blockMeshDict -entry scale -set 0.001
+
+foamJob -log-app blockMesh
+sleep 1
+foamJob -log-app extrudeMesh
+sleep 1
+foamJob -log-app checkMesh
+

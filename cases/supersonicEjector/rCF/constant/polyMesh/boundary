@@ -1,0 +1,83 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2512                                  |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    arch        "LSB;label=32;scalar=64";
+    class       polyBoundaryMesh;
+    location    "constant/polyMesh";
+    object      boundary;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+9
+(
+    axis
+    {
+        type            empty;
+        inGroups        1(empty);
+        nFaces          0;
+        startFace       39963;
+    }
+    inletMain
+    {
+        type            patch;
+        nFaces          25;
+        startFace       39963;
+    }
+    outlet
+    {
+        type            patch;
+        nFaces          75;
+        startFace       39988;
+    }
+    inletSecondary
+    {
+        type            patch;
+        nFaces          75;
+        startFace       40063;
+    }
+    wallNozzle1
+    {
+        type            wall;
+        inGroups        1(wall);
+        nFaces          162;
+        startFace       40138;
+    }
+    wallInletSecondary
+    {
+        type            wall;
+        inGroups        1(wall);
+        nFaces          125;
+        startFace       40300;
+    }
+    wallDiffuser
+    {
+        type            wall;
+        inGroups        1(wall);
+        nFaces          300;
+        startFace       40425;
+    }
+    front
+    {
+        type            wedge;
+        inGroups        1(wedge);
+        nFaces          20300;
+        startFace       40725;
+    }
+    back
+    {
+        type            wedge;
+        inGroups        1(wedge);
+        nFaces          20300;
+        startFace       61025;
+    }
+)
+
+// ************************************************************************* //

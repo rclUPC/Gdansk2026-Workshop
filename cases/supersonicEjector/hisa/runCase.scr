@@ -1,0 +1,8 @@
+#!/bin/bash
+
+rm -r 0
+cp -r 0.orig 0
+
+foamJob -log-app -s hisa
+
+
