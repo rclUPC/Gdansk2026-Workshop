@@ -30,7 +30,9 @@
 
 % ========== ABSTRACT ==========
 \begin{abstract}
-
+In this tutorial the simulation of high velocity compressible flow is covered with the study 
+of a supersonic ejector. Two density-based solvers are used: an explicit transient included in 
+the OpenFOAM distribution, and an implicit steady-state, freely available in Internet.  
 \end{abstract}
 
 \tableofcontents
@@ -130,7 +132,7 @@ In this session a supersonic air ejector is simulated. In this case high velocit
  The Courant–Friedrichs–Lewy (CFL) number is typically set $\leq 1$ for stability. 
  
  The open source transient implicit solver used is
-  \href{https://hisa.gitlab.io/}{\terminalcmd{HiSA}}, which implements the Advection Upstream Splitting Method~(AUSM)\textsuperscript{+up} upwind scheme for face flux computation.  
+  \href{https://hisa.gitlab.io/}{\terminalcmd{HiSA}} by CSIR, which implements the Advection Upstream Splitting Method~(AUSM)\textsuperscript{+up} upwind scheme for face flux computation.  
  This solver enables the simulation of unsteady flows with significantly larger CFL numbers than explicit solvers. Moreover, several studies have reported that implicit schemes offer greater accuracy and efficiency at high Mach numbers.
  In the present case, however, a steady-state time scheme is used, reducing the governing equations to the non-linear residual form:
  \begin{equation}\label{eq:steadyEqns}
