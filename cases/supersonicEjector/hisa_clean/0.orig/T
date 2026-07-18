@@ -28,7 +28,7 @@ boundaryField
     inletMain
     {
         type            characteristicPressureInletOutletTemperature;
-        #include	"include/freestreamConditions"
+        #include	"include/freestreamInletConditions"
         value           uniform 293; 
     }
     outlet

@@ -30,7 +30,7 @@ boundaryField
         type            uniformTotalPressure;
         rho             rho;
         psi             none;
-        gamma           1;
+        gamma           1.4;
         p0              table ((0 100000) (0.0001 700000));
         value           uniform 1e5;
     }
@@ -47,7 +47,7 @@ boundaryField
         type            totalPressure;
         rho             rho;
         psi             none;
-        gamma           1;
+        gamma           1.4;
         p0              uniform 100000;
         value           uniform 1e5; 
     }

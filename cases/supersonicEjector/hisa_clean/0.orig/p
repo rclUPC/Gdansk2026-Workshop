@@ -28,9 +28,8 @@ boundaryField
     inletMain
     {
         type            characteristicPressureInletOutletPressure;
-	#include	"include/freestreamConditions"
-	p		7e5;
-        value           uniform 700000; 
+        #include	"include/freestreamInletConditions"
+	value           uniform 700000; 
     }
     outlet
     {
