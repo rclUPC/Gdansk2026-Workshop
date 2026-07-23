@@ -1,0 +1,12 @@
+#!/bin/bash
+
+foamDictionary system/controlDict -entry writeFormat -set ascii
+
+rm -r 0
+cp -r 0.orig 0
+
+foamJob -a setFields
+
+foamJob -a foamRun
+
+

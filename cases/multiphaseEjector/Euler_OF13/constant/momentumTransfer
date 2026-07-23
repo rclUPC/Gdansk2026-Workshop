@@ -1,0 +1,99 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  v2512                                 |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      phaseProperties;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+drag
+{
+//	blending        segregated;
+
+    air_dispersedIn_water
+    {
+        type            SchillerNaumann;
+        residualRe      1e-3;
+        swarmCorrection
+        {
+            type        none;
+        }
+    }
+
+    water_dispersedIn_air
+    {
+        type            SchillerNaumann;
+        residualRe      1e-3;
+        swarmCorrection
+        {
+            type        none;
+        }
+    }
+
+    air_segregatedWith_water
+    {
+        type            segregated;
+        m               0.5;
+        n               8;
+        swarmCorrection
+        {
+            type        none;
+        }
+    }
+}
+
+virtualMass
+{
+    air_dispersedIn_water
+    {
+        type            constantCoefficient;
+        Cvm             0.5;
+    }
+
+    water_dispersedIn_air
+    {
+        type            constantCoefficient;
+        Cvm             0.5;
+    }
+}
+
+heatTransfer
+(
+    (air in water)
+    {
+        type            RanzMarshall;
+        residualAlpha   1e-4;
+    }
+
+    (water in air)
+    {
+        type            RanzMarshall;
+        residualAlpha   1e-4;
+    }
+);
+
+lift
+{
+}
+
+wallLubrication
+{
+}
+
+turbulentDispersion
+{
+}
+
+// Minimum allowable pressure
+pMin            10000;
+
+
+// ************************************************************************* //
